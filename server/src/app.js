@@ -12,6 +12,7 @@ import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
 import noteRoutes from "./routes/note.routes.js";
+import calendarRoutes from "./routes/calendar.routes.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/calendar", calendarRoutes);
 
 // Error handling
 app.use(notFound);
