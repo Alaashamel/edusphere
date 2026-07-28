@@ -10,6 +10,7 @@ import { config } from "./config/index.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
+import assignmentRoutes from "./routes/assignment.routes.js";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.get("/api/health", (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
+app.use("/api/assignments", assignmentRoutes);
 
 // Error handling
 app.use(notFound);

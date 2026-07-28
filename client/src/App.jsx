@@ -13,6 +13,8 @@ const ForgotPasswordPage = lazy(() => import("./features/auth/pages/ForgotPasswo
 const DashboardPage = lazy(() => import("./features/dashboard/pages/DashboardPage"));
 const CoursesPage = lazy(() => import("./features/courses/pages/CoursesPage"));
 const CourseDetailPage = lazy(() => import("./features/courses/pages/CourseDetailPage"));
+const AssignmentsPage = lazy(() => import("./features/assignments/pages/AssignmentsPage"));
+const AssignmentDetailPage = lazy(() => import("./features/assignments/pages/AssignmentDetailPage"));
 
 function App() {
   return (
@@ -31,6 +33,8 @@ function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/courses" element={<CoursesPage />} />
                 <Route path="/courses/:id" element={<CourseDetailPage />} />
+                <Route path="/assignments" element={<AssignmentsPage />} />
+                <Route path="/assignments/:id" element={<AssignmentDetailPage />} />
               </Route>
             </Route>
 
