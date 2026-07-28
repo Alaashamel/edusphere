@@ -38,3 +38,4 @@ dump.rdb
 *.pem
 *.key
 *.cert
+pr-body.txt
