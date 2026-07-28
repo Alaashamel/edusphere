@@ -9,6 +9,7 @@ import hpp from "hpp";
 import { config } from "./config/index.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
+import courseRoutes from "./routes/course.routes.js";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/courses", courseRoutes);
 
 // Error handling
 app.use(notFound);
