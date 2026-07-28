@@ -11,6 +11,7 @@ import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
+import noteRoutes from "./routes/note.routes.js";
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
+app.use("/api/notes", noteRoutes);
 
 // Error handling
 app.use(notFound);
