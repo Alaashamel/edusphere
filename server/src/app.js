@@ -20,6 +20,7 @@ import communityRoutes from "./routes/community.routes.js";
 import marketplaceRoutes from "./routes/marketplace.routes.js";
 import pomodoroRoutes from "./routes/pomodoro.routes.js";
 import gpaRoutes from "./routes/gpa.routes.js";
+import attendanceRoutes from "./routes/attendance.routes.js";
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use("/api/community", communityRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/pomodoro", pomodoroRoutes);
 app.use("/api/gpa", gpaRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 // Error handling
 app.use(notFound);
