@@ -13,6 +13,7 @@ import courseRoutes from "./routes/course.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
 import noteRoutes from "./routes/note.routes.js";
 import calendarRoutes from "./routes/calendar.routes.js";
+import aiRoutes from "./routes/ai.routes.js";
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/calendar", calendarRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Error handling
 app.use(notFound);

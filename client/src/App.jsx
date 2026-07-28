@@ -18,6 +18,7 @@ const AssignmentDetailPage = lazy(() => import("./features/assignments/pages/Ass
 const NotesPage = lazy(() => import("./features/notes/pages/NotesPage"));
 const NoteDetailPage = lazy(() => import("./features/notes/pages/NoteDetailPage"));
 const CalendarPage = lazy(() => import("./features/calendar/pages/CalendarPage"));
+const AIAssistantPage = lazy(() => import("./features/ai/pages/AIAssistantPage"));
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/notes" element={<NotesPage />} />
                 <Route path="/notes/:id" element={<NoteDetailPage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/ai" element={<AIAssistantPage />} />
               </Route>
             </Route>
 

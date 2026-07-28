@@ -1,0 +1,19 @@
+## Summary
+- CalendarEvent model with types (class, exam, deadline, reminder, study, custom), color, recurrence, reminders, and attendees
+- Full CRUD API with date range queries, today's events, and upcoming events endpoints
+- Frontend month view calendar with day grid, event color indicators, and selected day sidebar
+- Event creation modal with type selection, color picker, location, and datetime inputs
+
+## Changes
+- **server/src/models/CalendarEvent.model.js**: New model with indexed queries for efficient date range lookups
+- **server/src/services/calendar.service.js**: Service layer for CRUD, date range, today, and upcoming queries
+- **server/src/controllers/calendar.controller.js**: Controller with all calendar endpoints
+- **server/src/routes/calendar.routes.js**: Routes with auth and validation middleware
+- **server/src/validators/calendar.validator.js**: Zod schemas for create, update, and query validation
+- **server/src/app.js**: Registered calendar routes at /api/calendar
+- **client/src/features/calendar/pages/CalendarPage.jsx**: Month grid with event dots, day selection, create modal
+- **client/src/services/calendar.service.js**: API service for all calendar endpoints
+- **client/src/App.jsx**: Added /calendar route
+
+## Closes
+Closes #7
