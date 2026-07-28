@@ -17,6 +17,7 @@ import aiRoutes from "./routes/ai.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import studyGroupRoutes from "./routes/studyGroup.routes.js";
 import communityRoutes from "./routes/community.routes.js";
+import marketplaceRoutes from "./routes/marketplace.routes.js";
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/study-groups", studyGroupRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/marketplace", marketplaceRoutes);
 
 // Error handling
 app.use(notFound);

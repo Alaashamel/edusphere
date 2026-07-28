@@ -24,6 +24,7 @@ const StudyGroupsPage = lazy(() => import("./features/studyGroups/pages/StudyGro
 const StudyGroupDetailPage = lazy(() => import("./features/studyGroups/pages/StudyGroupDetailPage"));
 const CommunityPage = lazy(() => import("./features/community/pages/CommunityPage"));
 const PostDetailPage = lazy(() => import("./features/community/pages/PostDetailPage"));
+const MarketplacePage = lazy(() => import("./features/marketplace/pages/MarketplacePage"));
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/study-groups/:id" element={<StudyGroupDetailPage />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/community/:id" element={<PostDetailPage />} />
+                <Route path="/marketplace" element={<MarketplacePage />} />
               </Route>
             </Route>
 
