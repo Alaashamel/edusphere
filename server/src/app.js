@@ -18,6 +18,7 @@ import chatRoutes from "./routes/chat.routes.js";
 import studyGroupRoutes from "./routes/studyGroup.routes.js";
 import communityRoutes from "./routes/community.routes.js";
 import marketplaceRoutes from "./routes/marketplace.routes.js";
+import pomodoroRoutes from "./routes/pomodoro.routes.js";
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/study-groups", studyGroupRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/marketplace", marketplaceRoutes);
+app.use("/api/pomodoro", pomodoroRoutes);
 
 // Error handling
 app.use(notFound);
