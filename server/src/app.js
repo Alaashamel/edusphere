@@ -16,6 +16,7 @@ import calendarRoutes from "./routes/calendar.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import studyGroupRoutes from "./routes/studyGroup.routes.js";
+import communityRoutes from "./routes/community.routes.js";
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.use("/api/calendar", calendarRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/study-groups", studyGroupRoutes);
+app.use("/api/community", communityRoutes);
 
 // Error handling
 app.use(notFound);
