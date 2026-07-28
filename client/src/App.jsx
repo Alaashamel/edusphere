@@ -20,6 +20,8 @@ const NoteDetailPage = lazy(() => import("./features/notes/pages/NoteDetailPage"
 const CalendarPage = lazy(() => import("./features/calendar/pages/CalendarPage"));
 const AIAssistantPage = lazy(() => import("./features/ai/pages/AIAssistantPage"));
 const ChatPage = lazy(() => import("./features/chat/pages/ChatPage"));
+const StudyGroupsPage = lazy(() => import("./features/studyGroups/pages/StudyGroupsPage"));
+const StudyGroupDetailPage = lazy(() => import("./features/studyGroups/pages/StudyGroupDetailPage"));
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/ai" element={<AIAssistantPage />} />
                 <Route path="/chat" element={<ChatPage />} />
+                <Route path="/study-groups" element={<StudyGroupsPage />} />
+                <Route path="/study-groups/:id" element={<StudyGroupDetailPage />} />
               </Route>
             </Route>
 
