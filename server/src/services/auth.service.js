@@ -4,6 +4,7 @@ import { config } from "../config/index.js";
 import User from "../models/User.model.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import logger from "../utils/logger.js";
+import emailService from "./email.service.js";
 
 class AuthService {
   async register({ firstName, lastName, email, password }) {
@@ -12,7 +13,11 @@ class AuthService {
       throw new AppError("Email already registered", 409);
     }
 
-    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const emailVerificationToken = crypto
+      .createHash("sha256")
+      .update(rawToken)
+      .digest("hex");
     const emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000;
 
     const user = await User.create({
@@ -25,6 +30,12 @@ class AuthService {
     });
 
     const tokens = await this._generateTokens(user._id);
+
+    emailService.sendVerificationEmail({
+      to: email,
+      firstName,
+      token: rawToken,
+    });
 
     logger.info(`New user registered: ${email}`);
 
@@ -122,6 +133,55 @@ class AuthService {
     }
 
     return this._sanitizeUser(user);
+  }
+
+  async verifyEmail(token) {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      emailVerificationToken: hashedToken,
+      emailVerificationExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      throw new AppError("Invalid or expired verification token", 400);
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpire = undefined;
+    await user.save({ validateModifiedOnly: true });
+
+    logger.info(`Email verified: ${user.email}`);
+    return true;
+  }
+
+  async resendVerificationEmail(userId) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (user.isEmailVerified) {
+      throw new AppError("Email already verified", 400);
+    }
+
+    const emailVerificationToken = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationToken = crypto
+      .createHash("sha256")
+      .update(emailVerificationToken)
+      .digest("hex");
+    user.emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000;
+    await user.save({ validateModifiedOnly: true });
+
+    emailService.sendVerificationEmail({
+      to: user.email,
+      firstName: user.firstName,
+      token: emailVerificationToken,
+    });
+
+    logger.info(`Verification email resent: ${user.email}`);
+    return true;
   }
 
   async generatePasswordResetToken(email) {

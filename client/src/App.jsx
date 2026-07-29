@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
@@ -7,10 +7,12 @@ import AdminRoute from "./components/layout/AdminRoute";
 import AppLayout from "./components/layout/AppLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoadingScreen from "./components/ui/LoadingScreen";
+import CommandPalette from "./components/CommandPalette";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("./features/auth/pages/ForgotPasswordPage"));
+const VerifyEmailPage = lazy(() => import("./features/auth/pages/VerifyEmailPage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/pages/DashboardPage"));
 const CoursesPage = lazy(() => import("./features/courses/pages/CoursesPage"));
@@ -38,6 +40,22 @@ const NotificationsPage = lazy(() => import("./features/notifications/pages/Noti
 const AdminPage = lazy(() => import("./features/admin/pages/AdminPage"));
 
 function App() {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      }
+      if (e.key === "Escape" && paletteOpen) {
+        setPaletteOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [paletteOpen]);
+
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -49,10 +67,12 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             </Route>
 
+            <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
             <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/courses" element={<CoursesPage />} />
                 <Route path="/courses/:id" element={<CourseDetailPage />} />
                 <Route path="/assignments" element={<AssignmentsPage />} />
@@ -90,6 +110,7 @@ function App() {
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Suspense>
+        {paletteOpen && <CommandPalette onClose={() => setPaletteOpen(false)} />}
       </AuthProvider>
     </ThemeProvider>
   );
