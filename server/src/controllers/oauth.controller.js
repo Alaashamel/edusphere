@@ -21,6 +21,9 @@ export const googleCallback = (req, res, next) => {
       expiresIn: config.jwt.refreshExpire,
     });
 
+    user.refreshToken = refreshToken;
+    user.save({ validateModifiedOnly: true });
+
     res.redirect(`${config.frontendUrl}/oauth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`);
   })(req, res, next);
 };
@@ -44,6 +47,9 @@ export const githubCallback = (req, res, next) => {
     const refreshToken = jwt.sign({ id: user._id }, config.jwt.refreshSecret, {
       expiresIn: config.jwt.refreshExpire,
     });
+
+    user.refreshToken = refreshToken;
+    user.save({ validateModifiedOnly: true });
 
     res.redirect(`${config.frontendUrl}/oauth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`);
   })(req, res, next);

@@ -71,9 +71,16 @@ export default function VerifyEmailPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
               <div className="flex items-center justify-center gap-2 mt-4">
                 <Mail className="w-4 h-4 text-gray-400" />
-                <Link to="/dashboard" className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                <button
+                  onClick={() => {
+                    authService.resendVerification()
+                      .then(() => setMessage("Verification email resent. Please check your inbox."))
+                      .catch((err) => setMessage(err.response?.data?.message || "Failed to resend. Try again later."));
+                  }}
+                  className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400"
+                >
                   Resend verification email
-                </Link>
+                </button>
               </div>
             </div>
           )}

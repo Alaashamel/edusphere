@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
+import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
@@ -52,6 +53,9 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use("/api", limiter);
+
+// Cookie parsing
+app.use(cookieParser());
 
 // Body parsing
 app.use(express.json({ limit: "10mb" }));

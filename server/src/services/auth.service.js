@@ -238,7 +238,7 @@ class AuthService {
   async generatePasswordResetToken(email) {
     const user = await User.findOne({ email });
     if (!user) {
-      return;
+      return null;
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
@@ -250,7 +250,7 @@ class AuthService {
 
     await user.save({ validateModifiedOnly: true });
 
-    return resetToken;
+    return { token: resetToken, firstName: user.firstName, email: user.email };
   }
 
   async resetPassword(token, newPassword) {

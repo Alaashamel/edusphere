@@ -34,10 +34,15 @@ export default function OAuthCallbackPage() {
       document.cookie = `refreshToken=${refreshToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Strict`;
     }
 
-    checkAuth().then(() => {
-      setState("success");
-      setTimeout(() => navigate("/dashboard"), 1000);
-    });
+    checkAuth()
+      .then(() => {
+        setState("success");
+        setTimeout(() => navigate("/dashboard"), 1000);
+      })
+      .catch(() => {
+        setState("error");
+        setMessage("Failed to verify authentication. Please try logging in again.");
+      });
   }, [searchParams, checkAuth, navigate]);
 
   if (state === "processing") {

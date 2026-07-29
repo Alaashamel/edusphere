@@ -12,6 +12,7 @@ import CommandPalette from "./components/CommandPalette";
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("./features/auth/pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./features/auth/pages/ResetPasswordPage"));
 const VerifyEmailPage = lazy(() => import("./features/auth/pages/VerifyEmailPage"));
 const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/pages/DashboardPage"));
@@ -66,6 +67,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
             </Route>
 
             <Route path="/verify-email/:token" element={<VerifyEmailPage />} />

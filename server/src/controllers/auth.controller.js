@@ -1,4 +1,5 @@
 import authService from "../services/auth.service.js";
+import emailService from "../services/email.service.js";
 import { config } from "../config/index.js";
 
 export const register = async (req, res, next) => {
@@ -28,6 +29,16 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const result = await authService.login(req.body);
+
+    if (result.requiresTwoFactor) {
+      return res.json({
+        success: true,
+        data: {
+          requiresTwoFactor: true,
+          twoFactorToken: result.twoFactorToken,
+        },
+      });
+    }
 
     res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
@@ -144,7 +155,15 @@ export const resendVerification = async (req, res, next) => {
 
 export const forgotPassword = async (req, res, next) => {
   try {
-    await authService.generatePasswordResetToken(req.body.email);
+    const result = await authService.generatePasswordResetToken(req.body.email);
+
+    if (result) {
+      await emailService.sendPasswordResetEmail({
+        to: result.email,
+        firstName: result.firstName,
+        token: result.token,
+      });
+    }
 
     res.json({
       success: true,
