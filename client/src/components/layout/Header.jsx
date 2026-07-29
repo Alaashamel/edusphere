@@ -1,4 +1,4 @@
-import { Menu, Search, Moon, Sun } from "lucide-react";
+import { Menu, Search, Moon, Sun, Monitor } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { getInitials } from "../../utils/helpers";
@@ -6,7 +6,10 @@ import NotificationDropdown from "../../features/notifications/components/Notifi
 
 export default function Header({ onMenuClick }) {
   const { user } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, cycleTheme } = useTheme();
+
+  const themeIcon = theme === "dark" ? Sun : theme === "system" ? Monitor : Moon;
+  const themeLabel = theme === "dark" ? "Light" : theme === "system" ? "Dark" : "System";
 
   return (
     <header className="sticky top-0 z-40 h-16 bg-white/80 dark:bg-dark-card/80 backdrop-blur-lg border-b border-gray-200 dark:border-dark-border">
@@ -32,12 +35,14 @@ export default function Header({ onMenuClick }) {
         {/* Right */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={cycleTheme}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-surface transition-colors"
-            title="Toggle theme"
+            title={`${themeLabel} mode`}
           >
             {theme === "dark" ? (
               <Sun className="w-5 h-5 text-yellow-500" />
+            ) : theme === "system" ? (
+              <Monitor className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             ) : (
               <Moon className="w-5 h-5 text-gray-500" />
             )}
