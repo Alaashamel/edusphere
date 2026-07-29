@@ -24,6 +24,7 @@ import attendanceRoutes from "./routes/attendance.routes.js";
 import fileRoutes from "./routes/file.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import analyticsRoutes from "./routes/analytics.routes.js";
+import gamificationRoutes from "./routes/gamification.routes.js";
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/gamification", gamificationRoutes);
 
 // Error handling
 app.use(notFound);
