@@ -30,6 +30,7 @@ const GpaPage = lazy(() => import("./features/gpa/pages/GpaPage"));
 const AttendancePage = lazy(() => import("./features/attendance/pages/AttendancePage"));
 const FilesPage = lazy(() => import("./features/files/pages/FilesPage"));
 const EventsPage = lazy(() => import("./features/events/pages/EventsPage"));
+const AnalyticsPage = lazy(() => import("./features/analytics/pages/AnalyticsPage"));
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
                 <Route path="/attendance" element={<AttendancePage />} />
                 <Route path="/files" element={<FilesPage />} />
                 <Route path="/events" element={<EventsPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
               </Route>
             </Route>
 

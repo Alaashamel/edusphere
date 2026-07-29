@@ -23,6 +23,7 @@ import gpaRoutes from "./routes/gpa.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
 import fileRoutes from "./routes/file.routes.js";
 import eventRoutes from "./routes/event.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 
 const app = express();
 
@@ -77,6 +78,7 @@ app.use("/api/gpa", gpaRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/files", fileRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // Error handling
 app.use(notFound);
