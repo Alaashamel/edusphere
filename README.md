@@ -1,5 +1,8 @@
 # EduSphere
 
+![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Language](https://img.shields.io/badge/language-JavaScript-informational.svg) ![Last Commit](https://img.shields.io/github/last-commit/Alaashamel/edusphere)
+
+
 **The Operating System for Every Student**
 
 EduSphere is a unified intelligent platform that replaces Google Calendar, Notion, Google Drive, Quizlet, Discord, Todoist, and ChatGPT — giving students one place to manage their entire academic life.
