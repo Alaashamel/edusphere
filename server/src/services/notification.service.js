@@ -10,15 +10,6 @@ class NotificationService {
       link,
       metadata,
     });
-
-    const { getIO } = await import("../config/socket.js");
-    const io = getIO();
-    if (io) {
-      io.to(`user:${userId}`).emit("notification:new", notification);
-      const unreadCount = await Notification.getUnreadCount(userId);
-      io.to(`user:${userId}`).emit("notification:unread", { count: unreadCount });
-    }
-
     return notification;
   }
 
@@ -57,27 +48,11 @@ class NotificationService {
       { read: true, readAt: new Date() },
       { new: true }
     );
-
-    if (!notification) return null;
-
-    const { getIO } = await import("../config/socket.js");
-    const io = getIO();
-    if (io) {
-      const unreadCount = await Notification.getUnreadCount(userId);
-      io.to(`user:${userId}`).emit("notification:unread", { count: unreadCount });
-    }
-
     return notification;
   }
 
   async markAllAsRead(userId) {
     await Notification.markAllAsRead(userId);
-
-    const { getIO } = await import("../config/socket.js");
-    const io = getIO();
-    if (io) {
-      io.to(`user:${userId}`).emit("notification:unread", { count: 0 });
-    }
   }
 
   async delete(userId, notificationId) {
@@ -107,15 +82,6 @@ class NotificationService {
         metadata,
       }))
     );
-
-    const { getIO } = await import("../config/socket.js");
-    const io = getIO();
-    if (io) {
-      for (const notification of notifications) {
-        io.to(`user:${notification.user}`).emit("notification:new", notification);
-      }
-    }
-
     return notifications;
   }
 }

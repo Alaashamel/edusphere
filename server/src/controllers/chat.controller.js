@@ -36,3 +36,12 @@ export const markAsRead = async (req, res, next) => {
     next(error);
   }
 };
+
+export const sendMessage = async (req, res, next) => {
+  try {
+    const message = await chatService.sendMessage(req.params.chatId, req.user._id, req.body);
+    res.status(201).json({ success: true, data: { message } });
+  } catch (error) {
+    next(error);
+  }
+};

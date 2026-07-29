@@ -61,6 +61,30 @@ class ChatService {
       await chat.save();
     }
   }
+
+  async sendMessage(chatId, senderId, { content, type = "text", fileUrl, fileName }) {
+    const chat = await Chat.findById(chatId);
+    if (!chat || !chat.participants.includes(senderId)) {
+      throw new AppError("Chat not found", 404);
+    }
+
+    const message = await Message.create({
+      chat: chatId,
+      sender: senderId,
+      content,
+      type,
+      fileUrl,
+      fileName,
+    });
+
+    await message.populate("sender", "firstName lastName avatar");
+    await Chat.findByIdAndUpdate(chatId, {
+      lastMessage: message._id,
+      lastMessageAt: new Date(),
+    });
+
+    return message;
+  }
 }
 
 export default new ChatService();

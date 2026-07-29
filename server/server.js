@@ -4,7 +4,6 @@ dotenv.config();
 import app from "./src/app.js";
 import { connectDB } from "./src/config/db.js";
 import { connectRedis } from "./src/config/redis.js";
-import { initSocket } from "./src/config/socket.js";
 import logger from "./src/utils/logger.js";
 
 const PORT = process.env.PORT || 5000;
@@ -14,13 +13,11 @@ const startServer = async () => {
     await connectDB();
     await connectRedis();
 
-    const httpServer = app.listen(PORT, () => {
+    app.listen(PORT, () => {
       logger.info(
         `EduSphere server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       );
     });
-
-    initSocket(httpServer);
   } catch (error) {
     logger.error("Failed to start server:", error);
     process.exit(1);

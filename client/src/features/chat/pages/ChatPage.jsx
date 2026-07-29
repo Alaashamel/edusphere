@@ -1,22 +1,16 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { io } from "socket.io-client";
 import {
   Send,
   Loader2,
   MessageSquare,
   Search,
-  Image,
-  Paperclip,
-  Smile,
   ArrowLeft,
   User,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import chatService from "../../../services/chat.service";
 import { formatDate } from "../../../utils/helpers";
-
-let socket = null;
 
 export default function ChatPage() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -25,35 +19,8 @@ export default function ChatPage() {
   const { data: chats } = useQuery({
     queryKey: ["chats"],
     queryFn: () => chatService.getChats().then((r) => r.data.data.chats),
+    refetchInterval: 5000,
   });
-
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) return;
-
-    socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000", {
-      auth: { token },
-      transports: ["websocket"],
-    });
-
-    socket.on("connect", () => console.log("Socket connected"));
-    socket.on("disconnect", () => console.log("Socket disconnected"));
-
-    socket.on("message:new", (message) => {
-      queryClient.invalidateQueries(["chats"]);
-      if (message.chat === selectedChat?._id) {
-        queryClient.invalidateQueries(["messages", selectedChat._id]);
-      }
-    });
-
-    socket.on("user:online", () => queryClient.invalidateQueries(["chats"]));
-    socket.on("user:offline", () => queryClient.invalidateQueries(["chats"]));
-
-    return () => {
-      socket?.disconnect();
-      socket = null;
-    };
-  }, [selectedChat, queryClient]);
 
   const startChat = async (userId) => {
     try {
@@ -116,7 +83,6 @@ export default function ChatPage() {
             <ChatArea
               chat={selectedChat}
               onBack={() => setSelectedChat(null)}
-              socket={socket}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center">
@@ -178,12 +144,9 @@ function ChatListItem({ chat, otherUser, isSelected, onClick }) {
   );
 }
 
-function ChatArea({ chat, onBack, socket }) {
+function ChatArea({ chat, onBack }) {
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingUsers, setTypingUsers] = useState(new Set());
   const messagesEndRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
   const queryClient = useQueryClient();
 
   const otherUser = chat.participants.find(
@@ -193,70 +156,35 @@ function ChatArea({ chat, onBack, socket }) {
   const { data: messagesData } = useQuery({
     queryKey: ["messages", chat._id],
     queryFn: () => chatService.getMessages(chat._id).then((r) => r.data.data),
+    refetchInterval: 3000,
   });
 
   const messages = messagesData?.messages || [];
 
-  useEffect(() => {
-    if (socket && chat._id) {
-      socket.emit("chat:join", chat._id);
-      socket.emit("message:read", chat._id);
-
-      const handleTyping = ({ userId, isTyping: typing }) => {
-        if (userId !== localStorage.getItem("userId")) {
-          setTypingUsers((prev) => {
-            const next = new Set(prev);
-            if (typing) next.add(userId);
-            else next.delete(userId);
-            return next;
-          });
-        }
-      };
-
-      socket.on("typing:update", handleTyping);
-      return () => {
-        socket.emit("chat:leave", chat._id);
-        socket.off("typing:update", handleTyping);
-      };
-    }
-  }, [socket, chat._id]);
+  const sendMutation = useMutation({
+    mutationFn: (content) => chatService.sendMessage(chat._id, { content, type: "text" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["messages", chat._id]);
+      queryClient.invalidateQueries(["chats"]);
+    },
+    onError: () => toast.error("Failed to send message"),
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!input.trim() || !socket) return;
-
-    socket.emit("message:send", {
-      chatId: chat._id,
-      content: input.trim(),
-      type: "text",
-    });
+  const handleSend = () => {
+    if (!input.trim()) return;
+    sendMutation.mutate(input.trim());
     setInput("");
-    socket.emit("typing:stop", chat._id);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSend();
     }
-  };
-
-  const handleInput = (e) => {
-    setInput(e.target.value);
-
-    if (!isTyping) {
-      setIsTyping(true);
-      socket?.emit("typing:start", chat._id);
-    }
-
-    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      socket?.emit("typing:stop", chat._id);
-    }, 2000);
   };
 
   return (
@@ -277,9 +205,6 @@ function ChatArea({ chat, onBack, socket }) {
           <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
             {otherUser?.firstName} {otherUser?.lastName}
           </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {typingUsers.size > 0 ? "Typing..." : "Online"}
-          </p>
         </div>
       </div>
 
@@ -313,7 +238,7 @@ function ChatArea({ chat, onBack, socket }) {
           <div className="flex-1">
             <textarea
               value={input}
-              onChange={handleInput}
+              onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               rows={1}
@@ -321,11 +246,15 @@ function ChatArea({ chat, onBack, socket }) {
             />
           </div>
           <button
-            onClick={sendMessage}
-            disabled={!input.trim()}
+            onClick={handleSend}
+            disabled={!input.trim() || sendMutation.isPending}
             className="btn-primary px-4 h-10 shrink-0"
           >
-            <Send className="w-4 h-4" />
+            {sendMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
           </button>
         </div>
       </div>
