@@ -38,6 +38,7 @@ const AnalyticsPage = lazy(() => import("./features/analytics/pages/AnalyticsPag
 const GamificationPage = lazy(() => import("./features/gamification/pages/GamificationPage"));
 const NotificationsPage = lazy(() => import("./features/notifications/pages/NotificationsPage"));
 const AdminPage = lazy(() => import("./features/admin/pages/AdminPage"));
+const SettingsPage = lazy(() => import("./features/auth/pages/SettingsPage"));
 
 function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -95,6 +96,7 @@ function App() {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/gamification" element={<GamificationPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Route>
 

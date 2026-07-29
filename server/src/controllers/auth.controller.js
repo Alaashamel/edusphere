@@ -167,3 +167,66 @@ export const resetPassword = async (req, res, next) => {
     next(error);
   }
 };
+
+export const setup2FA = async (req, res, next) => {
+  try {
+    const result = await authService.setup2FA(req.user._id);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const enable2FA = async (req, res, next) => {
+  try {
+    await authService.enable2FA(req.user._id, req.body.code);
+
+    res.json({
+      success: true,
+      message: "2FA enabled successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const disable2FA = async (req, res, next) => {
+  try {
+    await authService.disable2FA(req.user._id, req.body.password);
+
+    res.json({
+      success: true,
+      message: "2FA disabled successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verify2FALogin = async (req, res, next) => {
+  try {
+    const result = await authService.verify2FALogin(req.body.twoFactorToken, req.body.code);
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: config.nodeEnv === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      success: true,
+      message: "2FA verification successful",
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

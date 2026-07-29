@@ -26,6 +26,16 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const { data } = await authService.login(credentials);
+    if (data.data.requiresTwoFactor) {
+      return data.data;
+    }
+    setAccessToken(data.data.accessToken);
+    setUser(data.data.user);
+    return data.data;
+  };
+
+  const verify2FA = async (twoFactorToken, code) => {
+    const { data } = await authService.verify2FALogin(twoFactorToken, code);
     setAccessToken(data.data.accessToken);
     setUser(data.data.user);
     return data.data;
@@ -59,6 +69,7 @@ export function AuthProvider({ children }) {
         user,
         loading,
         login,
+        verify2FA,
         register,
         logout,
         updateUser,
