@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
@@ -7,6 +7,7 @@ import AdminRoute from "./components/layout/AdminRoute";
 import AppLayout from "./components/layout/AppLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoadingScreen from "./components/ui/LoadingScreen";
+import CommandPalette from "./components/CommandPalette";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
@@ -37,6 +38,22 @@ const NotificationsPage = lazy(() => import("./features/notifications/pages/Noti
 const AdminPage = lazy(() => import("./features/admin/pages/AdminPage"));
 
 function App() {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      }
+      if (e.key === "Escape" && paletteOpen) {
+        setPaletteOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [paletteOpen]);
+
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -88,6 +105,7 @@ function App() {
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </Suspense>
+        {paletteOpen && <CommandPalette onClose={() => setPaletteOpen(false)} />}
       </AuthProvider>
     </ThemeProvider>
   );
