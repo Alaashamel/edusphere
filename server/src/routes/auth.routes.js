@@ -8,6 +8,10 @@ import {
   refreshToken,
   verifyEmail,
   resendVerification,
+  setup2FA,
+  enable2FA,
+  disable2FA,
+  verify2FALogin,
   forgotPassword,
   resetPassword,
 } from "../controllers/auth.controller.js";
@@ -33,5 +37,10 @@ router.get("/verify-email/:token", verifyEmail);
 router.post("/resend-verification", authenticate, resendVerification);
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
 router.post("/reset-password/:token", validate(resetPasswordSchema), resetPassword);
+
+router.get("/2fa/setup", authenticate, setup2FA);
+router.post("/2fa/enable", authenticate, enable2FA);
+router.post("/2fa/disable", authenticate, disable2FA);
+router.post("/2fa/verify", verify2FALogin);
 
 export default router;

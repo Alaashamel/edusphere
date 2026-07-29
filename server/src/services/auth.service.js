@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { authenticator } from "otplib";
+import QRCode from "qrcode";
 import { config } from "../config/index.js";
 import User from "../models/User.model.js";
 import { AppError } from "../middlewares/errorHandler.js";
@@ -60,12 +62,61 @@ class AuthService {
       throw new AppError("Invalid email or password", 401);
     }
 
+    if (user.twoFactorEnabled) {
+      const twoFactorToken = jwt.sign(
+        { id: user._id, purpose: "2fa" },
+        config.jwt.secret,
+        { expiresIn: "5m" }
+      );
+
+      return {
+        requiresTwoFactor: true,
+        twoFactorToken,
+        user: { email: user.email, _id: user._id },
+      };
+    }
+
     user.lastLogin = new Date();
     const tokens = await this._generateTokens(user._id);
     user.refreshToken = tokens.refreshToken;
     await user.save({ validateModifiedOnly: true });
 
     logger.info(`User logged in: ${email}`);
+
+    return {
+      user: this._sanitizeUser(user),
+      ...tokens,
+    };
+  }
+
+  async verify2FALogin(twoFactorToken, code) {
+    let decoded;
+    try {
+      decoded = jwt.verify(twoFactorToken, config.jwt.secret);
+    } catch {
+      throw new AppError("Invalid or expired 2FA token", 401);
+    }
+
+    if (decoded.purpose !== "2fa") {
+      throw new AppError("Invalid token purpose", 401);
+    }
+
+    const user = await User.findById(decoded.id).select("+twoFactorSecret");
+    if (!user || !user.twoFactorEnabled) {
+      throw new AppError("2FA not enabled for this account", 401);
+    }
+
+    const isValid = authenticator.verify({ token: code, secret: user.twoFactorSecret });
+    if (!isValid) {
+      throw new AppError("Invalid 2FA code", 401);
+    }
+
+    user.lastLogin = new Date();
+    const tokens = await this._generateTokens(user._id);
+    user.refreshToken = tokens.refreshToken;
+    await user.save({ validateModifiedOnly: true });
+
+    logger.info(`2FA login successful: ${user.email}`);
 
     return {
       user: this._sanitizeUser(user),
@@ -220,6 +271,75 @@ class AuthService {
     user.refreshToken = undefined;
     await user.save();
 
+    return true;
+  }
+
+  async setup2FA(userId) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (user.twoFactorEnabled) {
+      throw new AppError("2FA is already enabled", 400);
+    }
+
+    const secret = authenticator.generateSecret();
+    const otpauth = authenticator.keyuri(user.email, "EduSphere", secret);
+    const qrCode = await QRCode.toDataURL(otpauth);
+
+    user.twoFactorSecret = secret;
+    await user.save({ validateModifiedOnly: true });
+
+    return { secret, qrCode };
+  }
+
+  async enable2FA(userId, code) {
+    const user = await User.findById(userId).select("+twoFactorSecret");
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (user.twoFactorEnabled) {
+      throw new AppError("2FA is already enabled", 400);
+    }
+
+    if (!user.twoFactorSecret) {
+      throw new AppError("2FA not set up. Call setup first.", 400);
+    }
+
+    const isValid = authenticator.verify({ token: code, secret: user.twoFactorSecret });
+    if (!isValid) {
+      throw new AppError("Invalid 2FA code", 400);
+    }
+
+    user.twoFactorEnabled = true;
+    await user.save({ validateModifiedOnly: true });
+
+    logger.info(`2FA enabled for user: ${user.email}`);
+    return true;
+  }
+
+  async disable2FA(userId, password) {
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    if (!user.twoFactorEnabled) {
+      throw new AppError("2FA is not enabled", 400);
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      throw new AppError("Invalid password", 401);
+    }
+
+    user.twoFactorEnabled = false;
+    user.twoFactorSecret = undefined;
+    await user.save({ validateModifiedOnly: true });
+
+    logger.info(`2FA disabled for user: ${user.email}`);
     return true;
   }
 

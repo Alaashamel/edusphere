@@ -11,6 +11,10 @@ const authService = {
   forgotPassword: (data) => api.post("/auth/forgot-password", data),
   resetPassword: (token, data) => api.post(`/auth/reset-password/${token}`, data),
   refreshToken: () => api.post("/auth/refresh-token"),
+  setup2FA: () => api.get("/auth/2fa/setup"),
+  enable2FA: (code) => api.post("/auth/2fa/enable", { code }),
+  disable2FA: (password) => api.post("/auth/2fa/disable", { password }),
+  verify2FALogin: (twoFactorToken, code) => api.post("/auth/2fa/verify", { twoFactorToken, code }),
 };
 
 export default authService;
