@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const ThemeContext = createContext(null);
 
@@ -8,11 +8,28 @@ export function ThemeProvider({ children }) {
     return saved || "system";
   });
 
+  const [resolvedTheme, setResolvedTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  });
+
+  const getSystemTheme = useCallback(() => {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  }, []);
+
   useEffect(() => {
     const root = document.documentElement;
 
     const applyTheme = (isDark) => {
       root.classList.toggle("dark", isDark);
+      document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+      setResolvedTheme(isDark ? "dark" : "light");
     };
 
     if (theme === "system") {
@@ -25,15 +42,29 @@ export function ThemeProvider({ children }) {
     } else {
       applyTheme(theme === "dark");
     }
-  }, [theme]);
+  }, [theme, getSystemTheme]);
 
   const changeTheme = (newTheme) => {
     setTheme(newTheme);
     localStorage.setItem("edusphere-theme", newTheme);
   };
 
+  const cycleTheme = () => {
+    if (theme === "light") changeTheme("dark");
+    else if (theme === "dark") changeTheme("system");
+    else changeTheme("light");
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme: changeTheme }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        setTheme: changeTheme,
+        resolvedTheme,
+        isDark: resolvedTheme === "dark",
+        cycleTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
