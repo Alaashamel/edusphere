@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../contexts/AuthContext";
+import OAuthButtons from "../components/OAuthButtons";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -117,6 +118,8 @@ export default function LoginPage() {
           )}
         </button>
       </form>
+
+      <OAuthButtons />
 
       <p className="text-center text-sm text-gray-500 dark:text-gray-400">
         Don&apos;t have an account?{" "}

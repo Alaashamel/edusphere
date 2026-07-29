@@ -11,6 +11,7 @@ import LoadingScreen from "./components/ui/LoadingScreen";
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("./features/auth/pages/ForgotPasswordPage"));
+const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/pages/DashboardPage"));
 const CoursesPage = lazy(() => import("./features/courses/pages/CoursesPage"));
 const CourseDetailPage = lazy(() => import("./features/courses/pages/CourseDetailPage"));
@@ -48,9 +49,10 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             </Route>
 
+            <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
+
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>
-                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/courses" element={<CoursesPage />} />
                 <Route path="/courses/:id" element={<CourseDetailPage />} />
                 <Route path="/assignments" element={<AssignmentsPage />} />
