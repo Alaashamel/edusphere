@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
+import AdminRoute from "./components/layout/AdminRoute";
 import AppLayout from "./components/layout/AppLayout";
 import AuthLayout from "./components/layout/AuthLayout";
 import LoadingScreen from "./components/ui/LoadingScreen";
@@ -33,6 +34,7 @@ const EventsPage = lazy(() => import("./features/events/pages/EventsPage"));
 const AnalyticsPage = lazy(() => import("./features/analytics/pages/AnalyticsPage"));
 const GamificationPage = lazy(() => import("./features/gamification/pages/GamificationPage"));
 const NotificationsPage = lazy(() => import("./features/notifications/pages/NotificationsPage"));
+const AdminPage = lazy(() => import("./features/admin/pages/AdminPage"));
 
 function App() {
   return (
@@ -71,6 +73,14 @@ function App() {
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/gamification" element={<GamificationPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+              </Route>
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AdminRoute />}>
+                <Route element={<AppLayout />}>
+                  <Route path="/admin" element={<AdminPage />} />
+                </Route>
               </Route>
             </Route>
 
