@@ -2,6 +2,7 @@ const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   port: parseInt(process.env.PORT, 10) || 5000,
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
+  apiUrl: process.env.API_URL || "http://localhost:5000",
 
   // MongoDB
   mongoUri: process.env.MONGODB_URI || "mongodb://localhost:27017/edusphere",

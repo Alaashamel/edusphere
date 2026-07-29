@@ -13,6 +13,7 @@ const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
 const ForgotPasswordPage = lazy(() => import("./features/auth/pages/ForgotPasswordPage"));
 const VerifyEmailPage = lazy(() => import("./features/auth/pages/VerifyEmailPage"));
+const OAuthCallbackPage = lazy(() => import("./features/auth/pages/OAuthCallbackPage"));
 const DashboardPage = lazy(() => import("./features/dashboard/pages/DashboardPage"));
 const CoursesPage = lazy(() => import("./features/courses/pages/CoursesPage"));
 const CourseDetailPage = lazy(() => import("./features/courses/pages/CourseDetailPage"));
@@ -67,6 +68,7 @@ function App() {
             </Route>
 
             <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+            <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
 
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>

@@ -9,6 +9,8 @@ import hpp from "hpp";
 import { config } from "./config/index.js";
 import { errorHandler, notFound } from "./middlewares/errorHandler.js";
 import authRoutes from "./routes/auth.routes.js";
+import oauthRoutes from "./routes/oauth.routes.js";
+import passport from "./services/oauth.service.js";
 import courseRoutes from "./routes/course.routes.js";
 import assignmentRoutes from "./routes/assignment.routes.js";
 import noteRoutes from "./routes/note.routes.js";
@@ -60,6 +62,10 @@ app.use(mongoSanitize());
 app.use(hpp());
 app.use(compression());
 
+// Passport
+app.use(passport.initialize());
+app.locals.passport = passport;
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({ success: true, message: "EduSphere API is running", timestamp: new Date().toISOString() });
@@ -67,6 +73,7 @@ app.get("/api/health", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", oauthRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/notes", noteRoutes);
