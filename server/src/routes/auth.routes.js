@@ -6,6 +6,8 @@ import {
   getMe,
   updateProfile,
   refreshToken,
+  verifyEmail,
+  resendVerification,
   forgotPassword,
   resetPassword,
 } from "../controllers/auth.controller.js";
@@ -27,6 +29,8 @@ router.post("/refresh-token", refreshToken);
 router.post("/logout", authenticate, logout);
 router.get("/me", authenticate, getMe);
 router.patch("/me", authenticate, validate(updateProfileSchema), updateProfile);
+router.get("/verify-email/:token", verifyEmail);
+router.post("/resend-verification", authenticate, resendVerification);
 router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
 router.post("/reset-password/:token", validate(resetPasswordSchema), resetPassword);
 

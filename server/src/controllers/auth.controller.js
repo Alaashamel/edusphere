@@ -116,6 +116,32 @@ export const updateProfile = async (req, res, next) => {
   }
 };
 
+export const verifyEmail = async (req, res, next) => {
+  try {
+    await authService.verifyEmail(req.params.token);
+
+    res.json({
+      success: true,
+      message: "Email verified successfully. You can now access all features.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendVerification = async (req, res, next) => {
+  try {
+    await authService.resendVerificationEmail(req.user._id);
+
+    res.json({
+      success: true,
+      message: "Verification email sent. Please check your inbox.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const forgotPassword = async (req, res, next) => {
   try {
     await authService.generatePasswordResetToken(req.body.email);
