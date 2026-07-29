@@ -33,6 +33,7 @@ export const initSocket = (httpServer) => {
   io.on("connection", (socket) => {
     logger.info(`User connected: ${socket.userId}`);
     onlineUsers.set(socket.userId, socket.id);
+    socket.join(`user:${socket.userId}`);
     io.emit("user:online", { userId: socket.userId });
 
     socket.on("chat:join", async (chatId) => {

@@ -32,6 +32,7 @@ const FilesPage = lazy(() => import("./features/files/pages/FilesPage"));
 const EventsPage = lazy(() => import("./features/events/pages/EventsPage"));
 const AnalyticsPage = lazy(() => import("./features/analytics/pages/AnalyticsPage"));
 const GamificationPage = lazy(() => import("./features/gamification/pages/GamificationPage"));
+const NotificationsPage = lazy(() => import("./features/notifications/pages/NotificationsPage"));
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
                 <Route path="/events" element={<EventsPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/gamification" element={<GamificationPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
               </Route>
             </Route>
 
